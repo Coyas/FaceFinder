@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FaceFinder</string>
+    <string name="image_classification">Image Classification</string>
+    <string name="face_detection">Face Detection</string>
 </resources>
