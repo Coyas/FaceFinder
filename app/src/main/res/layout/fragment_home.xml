@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Home fragment"
         android:textSize="26dp"
+        android:textColor="@color/verde"
         android:layout_gravity="center"/>
 
 </FrameLayout>
