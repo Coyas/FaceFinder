@@ -1,11 +1,9 @@
 package cv.edu.unicv.facefinder.Helpers;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelStoreOwner;
-
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,27 +22,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cv.edu.unicv.facefinder.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.face.Face;
-import com.google.mlkit.vision.face.FaceDetection;
-import com.google.mlkit.vision.face.FaceDetector;
-import com.google.mlkit.vision.face.FaceDetectorOptions;
-import com.google.mlkit.vision.label.ImageLabel;
-import com.google.mlkit.vision.label.ImageLabeler;
-import com.google.mlkit.vision.label.ImageLabeling;
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ImageHelperActivity extends AppCompatActivity {
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private ImageView inputImageView;
     private TextView tvResultado;
-    private int REQUEST_PICK_IMAGE = 1000;
     public final static int PICK_IMAGE_ACTIVITY_REQUEST_CODE = 1064;
 
 
@@ -70,14 +56,32 @@ public class ImageHelperActivity extends AppCompatActivity {
         intent.setType("image/*");
 
         if (intent.resolveActivity(getPackageManager()) != null) {
-            // Start the image capture intent to take photo
             startActivityForResult(intent, PICK_IMAGE_ACTIVITY_REQUEST_CODE);
         }
+    }
+
+
+    public void onCamera(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            // display error state to the user
+        }
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                inputImageView.setImageBitmap(imageBitmap);
+                classificador(imageBitmap);
+            }
+
         if(requestCode == PICK_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {;
                 Bitmap bitmap = loadFromUri(data.getData());
@@ -85,7 +89,7 @@ public class ImageHelperActivity extends AppCompatActivity {
                 classificador(bitmap);
             }
             else{
-                Toast.makeText(this,"Image nao Selecionada",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Imagem nao Selecionada",Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -112,7 +116,7 @@ public class ImageHelperActivity extends AppCompatActivity {
         pen.setTextAlign(Paint.Align.LEFT);
 
         for (Box box : boxes) {
-            // draw bounding box
+
             pen.setColor(Color.RED);
             pen.setStrokeWidth(8F);
             pen.setStyle(Paint.Style.STROKE);
@@ -122,7 +126,6 @@ public class ImageHelperActivity extends AppCompatActivity {
 
             float fontSize = pen.getTextSize() * box.rect.width() / tagSize.width();
 
-            // adjust the font size so texts are inside the bounding box
             if (fontSize < pen.getTextSize()) {
                 pen.setTextSize(fontSize);
             }
