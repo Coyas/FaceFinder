@@ -2,4 +2,6 @@
     <string name="app_name">FaceFinder</string>
     <string name="image_classification">Image Classification</string>
     <string name="face_detection">Face Detection</string>
+    <string name="galeria">Galeria</string>
+    <string name="camera">Camera</string>
 </resources>

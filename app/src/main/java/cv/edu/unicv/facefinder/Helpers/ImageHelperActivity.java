@@ -116,22 +116,10 @@ public class ImageHelperActivity extends AppCompatActivity {
         pen.setTextAlign(Paint.Align.LEFT);
 
         for (Box box : boxes) {
-
             pen.setColor(Color.RED);
-            pen.setStrokeWidth(8F);
+            pen.setStrokeWidth(2F);
             pen.setStyle(Paint.Style.STROKE);
             canvas.drawRect(box.rect, pen);
-
-            Rect tagSize = new Rect(0, 0, 0, 0);
-
-            float fontSize = pen.getTextSize() * box.rect.width() / tagSize.width();
-
-            if (fontSize < pen.getTextSize()) {
-                pen.setTextSize(fontSize);
-            }
-
-            float margin = (box.rect.width() - tagSize.width()) / 2.0F;
-            if (margin < 0F) margin = 0F;
         }
         return outputBitmap;
     }
